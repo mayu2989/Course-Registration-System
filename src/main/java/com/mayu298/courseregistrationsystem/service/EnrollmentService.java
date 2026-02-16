@@ -14,12 +14,18 @@ import com.mayu298.courseregistrationsystem.repository.EnrollmentRepository;
 import com.mayu298.courseregistrationsystem.repository.StudentRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
 public class EnrollmentService {
+
+    private static final Logger log =
+            LoggerFactory.getLogger(EnrollmentService.class);
 
     private final EnrollmentRepository enrollmentRepository;
     private final StudentRepository studentRepository;
@@ -42,18 +48,27 @@ public class EnrollmentService {
     @Transactional
     public EnrollmentResponseDTO enrollStudent(EnrollmentRequestDTO dto) {
 
+        log.info("Enrollment request received for studentId: {} courseId: {}",
+                dto.getStudentId(), dto.getCourseId());
+
         Student student = studentRepository.findById(dto.getStudentId())
-                .orElseThrow(() ->
-                        new ResourceNotFoundException("Student not found"));
+                .orElseThrow(() -> {
+                    log.error("Student not found with id: {}", dto.getStudentId());
+                    return new ResourceNotFoundException("Student not found");
+                });
 
         Course course = courseRepository.findById(dto.getCourseId())
-                .orElseThrow(() ->
-                        new ResourceNotFoundException("Course not found"));
+                .orElseThrow(() -> {
+                    log.error("Course not found with id: {}", dto.getCourseId());
+                    return new ResourceNotFoundException("Course not found");
+                });
 
         boolean exists =
                 enrollmentRepository.existsByStudentAndCourse(student, course);
 
         if (exists) {
+            log.warn("Duplicate enrollment attempt: student {} already enrolled in course {}",
+                    dto.getStudentId(), dto.getCourseId());
             throw new DuplicateEnrollmentException("Already enrolled");
         }
 
@@ -62,6 +77,9 @@ public class EnrollmentService {
         enrollment.setCourse(course);
 
         Enrollment saved = enrollmentRepository.save(enrollment);
+
+        log.info("Student {} successfully enrolled into course {}",
+                dto.getStudentId(), dto.getCourseId());
 
         return mapToDTO(saved);
     }
