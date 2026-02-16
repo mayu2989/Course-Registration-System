@@ -1,15 +1,10 @@
 package com.mayu298.courseregistrationsystem.controller;
 
-import com.mayu298.courseregistrationsystem.dto.CourseResponseDTO;
-import com.mayu298.courseregistrationsystem.dto.EnrollmentRequestDTO;
-import com.mayu298.courseregistrationsystem.dto.EnrollmentResponseDTO;
-import com.mayu298.courseregistrationsystem.dto.StudentResponseDTO;
+import com.mayu298.courseregistrationsystem.dto.*;
 import com.mayu298.courseregistrationsystem.service.EnrollmentService;
-import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.net.URI;
 import java.util.List;
 
 @RestController
@@ -22,22 +17,17 @@ public class EnrollmentController {
         this.enrollmentService = enrollmentService;
     }
 
-    // 1️⃣ ENROLL STUDENT INTO COURSE
     @PostMapping
     public ResponseEntity<EnrollmentResponseDTO> enrollStudent(
-            @Valid @RequestBody EnrollmentRequestDTO dto) {
+            @RequestBody EnrollmentRequestDTO dto) {
 
-        EnrollmentResponseDTO response =
-                enrollmentService.enrollStudent(dto);
-
-        URI location = URI.create("/enrollments/" + response.getId());
-
-        return ResponseEntity.created(location).body(response);
+        return ResponseEntity.ok(
+                enrollmentService.enrollStudent(dto)
+        );
     }
 
-    // 2️⃣ GET ALL COURSES OF A STUDENT
     @GetMapping("/students/{studentId}/courses")
-    public ResponseEntity<List<CourseResponseDTO>> getCoursesForStudent(
+    public ResponseEntity<List<StudentCourseDTO>> getCoursesForStudent(
             @PathVariable Integer studentId) {
 
         return ResponseEntity.ok(
@@ -45,7 +35,7 @@ public class EnrollmentController {
         );
     }
 
-    // 3️⃣ GET ALL STUDENTS OF A COURSE
+
     @GetMapping("/courses/{courseId}/students")
     public ResponseEntity<List<StudentResponseDTO>> getStudentsForCourse(
             @PathVariable Integer courseId) {
@@ -55,13 +45,13 @@ public class EnrollmentController {
         );
     }
 
-    // 4️⃣ UNENROLL STUDENT FROM COURSE
-    @DeleteMapping
+    @DeleteMapping("/students/{studentId}/courses/{courseId}")
     public ResponseEntity<Void> unenrollStudent(
-            @RequestParam Integer studentId,
-            @RequestParam Integer courseId) {
+            @PathVariable Integer studentId,
+            @PathVariable Integer courseId) {
 
         enrollmentService.unenrollStudent(studentId, courseId);
+
         return ResponseEntity.noContent().build();
     }
 }

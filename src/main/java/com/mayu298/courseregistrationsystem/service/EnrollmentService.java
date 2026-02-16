@@ -1,9 +1,6 @@
 package com.mayu298.courseregistrationsystem.service;
 
-import com.mayu298.courseregistrationsystem.dto.CourseResponseDTO;
-import com.mayu298.courseregistrationsystem.dto.EnrollmentRequestDTO;
-import com.mayu298.courseregistrationsystem.dto.EnrollmentResponseDTO;
-import com.mayu298.courseregistrationsystem.dto.StudentResponseDTO;
+import com.mayu298.courseregistrationsystem.dto.*;
 import com.mayu298.courseregistrationsystem.exception.DuplicateEnrollmentException;
 import com.mayu298.courseregistrationsystem.exception.ResourceNotFoundException;
 import com.mayu298.courseregistrationsystem.model.Course;
@@ -12,11 +9,10 @@ import com.mayu298.courseregistrationsystem.model.Student;
 import com.mayu298.courseregistrationsystem.repository.CourseRepository;
 import com.mayu298.courseregistrationsystem.repository.EnrollmentRepository;
 import com.mayu298.courseregistrationsystem.repository.StudentRepository;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -67,8 +63,7 @@ public class EnrollmentService {
                 enrollmentRepository.existsByStudentAndCourse(student, course);
 
         if (exists) {
-            log.warn("Duplicate enrollment attempt: student {} already enrolled in course {}",
-                    dto.getStudentId(), dto.getCourseId());
+            log.warn("Duplicate enrollment attempt");
             throw new DuplicateEnrollmentException("Already enrolled");
         }
 
@@ -78,8 +73,7 @@ public class EnrollmentService {
 
         Enrollment saved = enrollmentRepository.save(enrollment);
 
-        log.info("Student {} successfully enrolled into course {}",
-                dto.getStudentId(), dto.getCourseId());
+        log.info("Enrollment successful");
 
         return mapToDTO(saved);
     }
@@ -87,8 +81,7 @@ public class EnrollmentService {
     // ============================
     // GET COURSES FOR STUDENT
     // ============================
-
-    public List<CourseResponseDTO> getCoursesForStudent(Integer studentId) {
+    public List<StudentCourseDTO> getCoursesForStudent(Integer studentId) {
 
         Student student = studentRepository.findById(studentId)
                 .orElseThrow(() ->
@@ -99,18 +92,20 @@ public class EnrollmentService {
 
         return enrollments.stream()
                 .map(e -> {
+
                     Course c = e.getCourse();
 
-                    CourseResponseDTO dto = new CourseResponseDTO();
-                    dto.setId(c.getId());
+                    StudentCourseDTO dto = new StudentCourseDTO();
+                    dto.setCourseId(c.getId());
                     dto.setTitle(c.getTitle());
                     dto.setDescription(c.getDescription());
-                    dto.setCreatedAt(c.getCreatedAt());
+                    dto.setEnrolledAt(e.getCreatedAt());
 
                     return dto;
                 })
                 .collect(Collectors.toList());
     }
+
 
     // ============================
     // GET STUDENTS FOR COURSE
@@ -179,10 +174,9 @@ public class EnrollmentService {
         dto.setCourseId(enrollment.getCourse().getId());
         dto.setCourseTitle(enrollment.getCourse().getTitle());
 
-        dto.setEnrolledAt(enrollment.getEnrolledAt());
+        // auditing field
+        dto.setEnrolledAt(enrollment.getCreatedAt());
 
         return dto;
     }
 }
-
-

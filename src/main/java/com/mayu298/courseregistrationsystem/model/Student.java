@@ -1,16 +1,21 @@
 package com.mayu298.courseregistrationsystem.model;
 
+import com.mayu298.courseregistrationsystem.config.Auditable;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDateTime;
-
-@Data
+@Getter
+@Setter
+@EqualsAndHashCode(callSuper = true)
 @Entity
 @Table(name = "student")
-public class Student {
+public class Student extends Auditable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -22,8 +27,4 @@ public class Student {
     @Email(message = "Email must be valid")
     @NotBlank(message = "Email is required")
     private String email;
-
-    @CreationTimestamp
-    @Column(updatable = false)
-    private LocalDateTime createdAt;
 }

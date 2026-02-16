@@ -1,16 +1,21 @@
 package com.mayu298.courseregistrationsystem.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.mayu298.courseregistrationsystem.config.Auditable;
 import jakarta.persistence.*;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDateTime;
 
-@Data
+@Getter
+@Setter
 @Entity
 @Table(name = "enrollment",uniqueConstraints = @UniqueConstraint(columnNames = {"student_id","course_id"}))
-public class Enrollment {
+public class Enrollment extends Auditable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -26,7 +31,5 @@ public class Enrollment {
     @JsonIgnore
     private Course course;
 
-    @CreationTimestamp
-    @Column(updatable = false)
-    private LocalDateTime enrolledAt;
+
 }

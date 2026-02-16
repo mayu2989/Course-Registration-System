@@ -1,19 +1,24 @@
 package com.mayu298.courseregistrationsystem.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.mayu298.courseregistrationsystem.config.Auditable;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDateTime;
 
 
-@Data
+@Getter
+@Setter
 @Entity
 @Table(name = "course")
 @JsonIgnoreProperties({"hibernateLazyInitializer","handler"})
-public class Course {
+public class Course extends Auditable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Integer id;
@@ -23,8 +28,5 @@ public class Course {
     @Column(length = 1000)
     @NotBlank(message = "Description is required")
     String description;
-    @CreationTimestamp
-    @Column(updatable = false)
-    private LocalDateTime createdAt;
 
 }
