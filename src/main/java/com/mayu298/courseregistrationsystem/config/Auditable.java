@@ -19,4 +19,6 @@ public abstract class Auditable {
 
     @LastModifiedDate
     private LocalDateTime updatedAt;
+    private boolean deleted = false;
+
 }

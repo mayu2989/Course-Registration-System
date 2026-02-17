@@ -1,15 +1,14 @@
 package com.mayu298.courseregistrationsystem.model;
 
+
 import com.mayu298.courseregistrationsystem.config.Auditable;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
-import lombok.Data;
+
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
-import org.hibernate.annotations.CreationTimestamp;
 
-import java.time.LocalDateTime;
 @Getter
 @Setter
 @EqualsAndHashCode(callSuper = true)
@@ -27,4 +26,5 @@ public class Student extends Auditable {
     @Email(message = "Email must be valid")
     @NotBlank(message = "Email is required")
     private String email;
+
 }
