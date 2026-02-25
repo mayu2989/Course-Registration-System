@@ -11,6 +11,7 @@ import com.mayu298.courseregistrationsystem.repository.EnrollmentRepository;
 import com.mayu298.courseregistrationsystem.repository.StudentRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -59,19 +60,19 @@ public class EnrollmentService {
                     return new ResourceNotFoundException("Course not found");
                 });
 
-        boolean exists =
-                enrollmentRepository.existsByStudentAndCourse(student, course);
-
-        if (exists) {
-            log.warn("Duplicate enrollment attempt");
-            throw new DuplicateEnrollmentException("Already enrolled");
-        }
-
         Enrollment enrollment = new Enrollment();
         enrollment.setStudent(student);
         enrollment.setCourse(course);
 
-        Enrollment saved = enrollmentRepository.save(enrollment);
+        Enrollment saved;
+
+        try {
+            saved = enrollmentRepository.save(enrollment);
+        }
+        catch (DataIntegrityViolationException ex){
+            log.warn("Duplicate enrollment attempt detected");
+            throw new DuplicateEnrollmentException("Already enrolled");
+        }
 
         log.info("Enrollment successful");
 
@@ -81,6 +82,7 @@ public class EnrollmentService {
     // ============================
     // GET COURSES FOR STUDENT
     // ============================
+
     public List<StudentCourseDTO> getCoursesForStudent(Integer studentId) {
 
         Student student = studentRepository.findById(studentId)
@@ -105,7 +107,6 @@ public class EnrollmentService {
                 })
                 .collect(Collectors.toList());
     }
-
 
     // ============================
     // GET STUDENTS FOR COURSE
@@ -167,14 +168,10 @@ public class EnrollmentService {
         EnrollmentResponseDTO dto = new EnrollmentResponseDTO();
 
         dto.setId(enrollment.getId());
-
         dto.setStudentId(enrollment.getStudent().getId());
         dto.setStudentName(enrollment.getStudent().getName());
-
         dto.setCourseId(enrollment.getCourse().getId());
         dto.setCourseTitle(enrollment.getCourse().getTitle());
-
-        // auditing field
         dto.setEnrolledAt(enrollment.getCreatedAt());
 
         return dto;

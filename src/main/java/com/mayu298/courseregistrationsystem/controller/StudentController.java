@@ -9,6 +9,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
@@ -38,6 +39,7 @@ public class StudentController {
     }
 
     // GET ALL
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping
     public ResponseEntity<Page<StudentResponseDTO>> getAllStudents(
             @RequestParam(required = false) String name,
@@ -61,6 +63,7 @@ public class StudentController {
 
 
     // GET BY ID
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/{id}")
     public ResponseEntity<StudentResponseDTO> getStudentById(
             @PathVariable Integer id) {
@@ -69,6 +72,7 @@ public class StudentController {
     }
 
     // DELETE
+    @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteStudentById(
             @PathVariable Integer id) {

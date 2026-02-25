@@ -3,6 +3,7 @@ package com.mayu298.courseregistrationsystem.service;
 import com.mayu298.courseregistrationsystem.dto.LoginRequestDTO;
 import com.mayu298.courseregistrationsystem.dto.RegisterRequestDTO;
 import com.mayu298.courseregistrationsystem.exception.EmailAlreadyExistsException;
+import com.mayu298.courseregistrationsystem.exception.UsernameAlreadyExistsException;
 import com.mayu298.courseregistrationsystem.model.Role;
 import com.mayu298.courseregistrationsystem.model.Student;
 import com.mayu298.courseregistrationsystem.model.User;
@@ -35,22 +36,31 @@ public class AuthService {
     }
     @Transactional
     public void register(RegisterRequestDTO dto) {
-        try{
+
         User user = new User();
         user.setUsername(dto.getUsername());
         user.setPassword(passwordEncoder.encode(dto.getPassword()));
         user.setRole(Role.ROLE_STUDENT);
 
-        User savedUser = userRepository.save(user);
+        User savedUser;
+
+        try {
+            savedUser = userRepository.save(user);
+        }
+        catch (org.springframework.dao.DataIntegrityViolationException ex){
+            throw new UsernameAlreadyExistsException("Username already exists");
+        }
 
         Student student = new Student();
         student.setUser(savedUser);
         student.setName(dto.getName());
         student.setEmail(dto.getEmail());
 
-        studentRepository.save(student);
-    }catch (org.springframework.dao.DataIntegrityViolationException ex){
-            throw new EmailAlreadyExistsException("Email Already Exists");
+        try {
+            studentRepository.save(student);
+        }
+        catch (org.springframework.dao.DataIntegrityViolationException ex){
+            throw new EmailAlreadyExistsException("Email already exists");
         }
     }
     public String login(LoginRequestDTO dto) {

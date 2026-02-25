@@ -10,6 +10,18 @@ import java.util.Map;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
+    @ExceptionHandler(UsernameAlreadyExistsException.class)
+    public ResponseEntity<?> handleUsernameExists(UsernameAlreadyExistsException ex) {
+
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
+                Map.of(
+                        "timestamp", LocalDateTime.now(),
+                        "status", 400,
+                        "error", "Bad Request",
+                        "message", ex.getMessage()
+                )
+        );
+    }
     @ExceptionHandler(CourseDeletionNotAllowedException.class)
     public ResponseEntity<?> handleCourseDeletion(CourseDeletionNotAllowedException ex) {
 

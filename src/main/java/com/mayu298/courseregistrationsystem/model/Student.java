@@ -25,7 +25,7 @@ public class Student extends Auditable {
 
     @Email(message = "Email must be valid")
     @NotBlank(message = "Email is required")
-    @Column(unique = true)
+    @Column(unique = true,nullable = false)
     private String email;
 
     @OneToOne
