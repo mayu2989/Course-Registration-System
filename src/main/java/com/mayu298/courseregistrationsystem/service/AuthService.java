@@ -2,8 +2,13 @@ package com.mayu298.courseregistrationsystem.service;
 
 import com.mayu298.courseregistrationsystem.dto.LoginRequestDTO;
 import com.mayu298.courseregistrationsystem.dto.RegisterRequestDTO;
+import com.mayu298.courseregistrationsystem.exception.EmailAlreadyExistsException;
+import com.mayu298.courseregistrationsystem.model.Role;
+import com.mayu298.courseregistrationsystem.model.Student;
 import com.mayu298.courseregistrationsystem.model.User;
+import com.mayu298.courseregistrationsystem.repository.StudentRepository;
 import com.mayu298.courseregistrationsystem.repository.UserRepository;
+import jakarta.transaction.Transactional;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -16,22 +21,37 @@ public class AuthService {
     private JwtService jwtService;
     private PasswordEncoder passwordEncoder;
     private AuthenticationManager authenticationManager;
+    private StudentRepository studentRepository;
     public AuthService(UserRepository userRepository,
                        PasswordEncoder passwordEncoder,
-                       JwtService jwtService,AuthenticationManager authenticationManager) {
+                       JwtService jwtService,AuthenticationManager authenticationManager,
+                       StudentRepository studentRepository) {
 
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.jwtService = jwtService;
         this.authenticationManager = authenticationManager;
+        this.studentRepository = studentRepository;
     }
-
-    public void register(RegisterRequestDTO registerRequestDTO) {
+    @Transactional
+    public void register(RegisterRequestDTO dto) {
+        try{
         User user = new User();
-        user.setUsername(registerRequestDTO.getUsername());
-        user.setPassword(passwordEncoder.encode(registerRequestDTO.getPassword()));
-        user.setRole(registerRequestDTO.getRole());
-        userRepository.save(user);
+        user.setUsername(dto.getUsername());
+        user.setPassword(passwordEncoder.encode(dto.getPassword()));
+        user.setRole(Role.ROLE_STUDENT);
+
+        User savedUser = userRepository.save(user);
+
+        Student student = new Student();
+        student.setUser(savedUser);
+        student.setName(dto.getName());
+        student.setEmail(dto.getEmail());
+
+        studentRepository.save(student);
+    }catch (org.springframework.dao.DataIntegrityViolationException ex){
+            throw new EmailAlreadyExistsException("Email Already Exists");
+        }
     }
     public String login(LoginRequestDTO dto) {
 

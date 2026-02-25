@@ -2,8 +2,11 @@ package com.mayu298.courseregistrationsystem.service;
 
 import com.mayu298.courseregistrationsystem.dto.CourseRequestDTO;
 import com.mayu298.courseregistrationsystem.dto.CourseResponseDTO;
+import com.mayu298.courseregistrationsystem.exception.CourseDeletionNotAllowedException;
 import com.mayu298.courseregistrationsystem.model.Course;
 import com.mayu298.courseregistrationsystem.repository.CourseRepository;
+import com.mayu298.courseregistrationsystem.repository.EnrollmentRepository;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -13,9 +16,10 @@ import java.util.stream.Collectors;
 public class CourseService {
 
     private final CourseRepository courseRepository;
-
-    public CourseService(CourseRepository courseRepository) {
+    private final EnrollmentRepository enrollmentRepository;
+    public CourseService(CourseRepository courseRepository, EnrollmentRepository enrollmentRepository) {
         this.courseRepository = courseRepository;
+        this.enrollmentRepository = enrollmentRepository;
     }
 
     public CourseResponseDTO createCourse(CourseRequestDTO dto) {
@@ -45,15 +49,17 @@ public class CourseService {
 
         return mapToDTO(course);
     }
-
+    @PreAuthorize("hasRole('ADMIN')")
     public void deleteCourseById(Integer id) {
-        courseRepository.deleteById(id);
+        if(enrollmentRepository.existsByCourseId(id)) {
+            throw new CourseDeletionNotAllowedException(
+                    "Cannot delete course with enrolled students"
+            );
+        }
     }
 
     private CourseResponseDTO mapToDTO(Course course) {
-
         CourseResponseDTO dto = new CourseResponseDTO();
-
         dto.setId(course.getId());
         dto.setTitle(course.getTitle());
         dto.setDescription(course.getDescription());
