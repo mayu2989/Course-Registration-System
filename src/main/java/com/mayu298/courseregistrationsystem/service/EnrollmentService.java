@@ -9,9 +9,11 @@ import com.mayu298.courseregistrationsystem.model.Student;
 import com.mayu298.courseregistrationsystem.repository.CourseRepository;
 import com.mayu298.courseregistrationsystem.repository.EnrollmentRepository;
 import com.mayu298.courseregistrationsystem.repository.StudentRepository;
+import com.mayu298.courseregistrationsystem.security.CustomUserDetails;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -39,26 +41,29 @@ public class EnrollmentService {
     }
 
     // ============================
-    // ENROLL STUDENT
+    // ENROLL LOGGED-IN STUDENT
     // ============================
 
     @Transactional
     public EnrollmentResponseDTO enrollStudent(EnrollmentRequestDTO dto) {
 
-        log.info("Enrollment request received for studentId: {} courseId: {}",
-                dto.getStudentId(), dto.getCourseId());
+        CustomUserDetails principal =
+                (CustomUserDetails)
+                        SecurityContextHolder
+                                .getContext()
+                                .getAuthentication()
+                                .getPrincipal();
 
-        Student student = studentRepository.findById(dto.getStudentId())
-                .orElseThrow(() -> {
-                    log.error("Student not found with id: {}", dto.getStudentId());
-                    return new ResourceNotFoundException("Student not found");
-                });
+        Integer userId = principal.getId();
+
+        Student student = studentRepository
+                .findByUserId(userId)
+                .orElseThrow(() ->
+                        new ResourceNotFoundException("Student not found"));
 
         Course course = courseRepository.findById(dto.getCourseId())
-                .orElseThrow(() -> {
-                    log.error("Course not found with id: {}", dto.getCourseId());
-                    return new ResourceNotFoundException("Course not found");
-                });
+                .orElseThrow(() ->
+                        new ResourceNotFoundException("Course not found"));
 
         Enrollment enrollment = new Enrollment();
         enrollment.setStudent(student);
@@ -70,22 +75,29 @@ public class EnrollmentService {
             saved = enrollmentRepository.save(enrollment);
         }
         catch (DataIntegrityViolationException ex){
-            log.warn("Duplicate enrollment attempt detected");
             throw new DuplicateEnrollmentException("Already enrolled");
         }
-
-        log.info("Enrollment successful");
 
         return mapToDTO(saved);
     }
 
     // ============================
-    // GET COURSES FOR STUDENT
+    // GET MY COURSES
     // ============================
 
-    public List<StudentCourseDTO> getCoursesForStudent(Integer studentId) {
+    public List<StudentCourseDTO> getMyCourses() {
 
-        Student student = studentRepository.findById(studentId)
+        CustomUserDetails principal =
+                (CustomUserDetails)
+                        SecurityContextHolder
+                                .getContext()
+                                .getAuthentication()
+                                .getPrincipal();
+
+        Integer userId = principal.getId();
+
+        Student student = studentRepository
+                .findByUserId(userId)
                 .orElseThrow(() ->
                         new ResourceNotFoundException("Student not found"));
 
@@ -109,7 +121,7 @@ public class EnrollmentService {
     }
 
     // ============================
-    // GET STUDENTS FOR COURSE
+    // ADMIN ONLY
     // ============================
 
     public List<StudentResponseDTO> getStudentsForCourse(Integer courseId) {
@@ -137,13 +149,23 @@ public class EnrollmentService {
     }
 
     // ============================
-    // UNENROLL STUDENT
+    // UNENROLL MYSELF
     // ============================
 
     @Transactional
-    public void unenrollStudent(Integer studentId, Integer courseId) {
+    public void unenrollMyCourse(Integer courseId) {
 
-        Student student = studentRepository.findById(studentId)
+        CustomUserDetails principal =
+                (CustomUserDetails)
+                        SecurityContextHolder
+                                .getContext()
+                                .getAuthentication()
+                                .getPrincipal();
+
+        Integer userId = principal.getId();
+
+        Student student = studentRepository
+                .findByUserId(userId)
                 .orElseThrow(() ->
                         new ResourceNotFoundException("Student not found"));
 

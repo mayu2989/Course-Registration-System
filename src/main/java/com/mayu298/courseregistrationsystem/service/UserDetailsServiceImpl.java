@@ -2,6 +2,7 @@ package com.mayu298.courseregistrationsystem.service;
 
 import com.mayu298.courseregistrationsystem.model.User;
 import com.mayu298.courseregistrationsystem.repository.UserRepository;
+import com.mayu298.courseregistrationsystem.security.CustomUserDetails;
 import org.springframework.security.core.userdetails.*;
 import org.springframework.stereotype.Service;
 
@@ -28,11 +29,7 @@ public class UserDetailsServiceImpl
                 .orElseThrow(() ->
                         new UsernameNotFoundException("User not found"));
 
-        return new org.springframework.security.core.userdetails.User(
-                user.getUsername(),
-                user.getPassword(),
-                List.of(() ->
-                        "ROLE_" + user.getRole().name())
-        );
+        return new CustomUserDetails(user);
+
     }
 }

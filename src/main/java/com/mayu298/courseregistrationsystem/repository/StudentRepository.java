@@ -12,5 +12,4 @@ import java.util.Optional;
 public interface StudentRepository extends JpaRepository<Student,Integer> {
     Page<Student> findByNameContainingIgnoreCase(String name, Pageable pageable);
     Optional<Student> findByUserId(Integer userId);
-
 }

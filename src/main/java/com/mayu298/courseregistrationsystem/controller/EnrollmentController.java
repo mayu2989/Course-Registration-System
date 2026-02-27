@@ -26,14 +26,6 @@ public class EnrollmentController {
         );
     }
 
-    @GetMapping("/students/{studentId}/courses")
-    public ResponseEntity<List<StudentCourseDTO>> getCoursesForStudent(
-            @PathVariable Integer studentId) {
-
-        return ResponseEntity.ok(
-                enrollmentService.getCoursesForStudent(studentId)
-        );
-    }
 
 
     @GetMapping("/courses/{courseId}/students")
@@ -44,14 +36,21 @@ public class EnrollmentController {
                 enrollmentService.getStudentsForCourse(courseId)
         );
     }
+    @DeleteMapping("/my-courses/{courseId}")
+    public ResponseEntity<Void> unenrollMyCourse(
+            @PathVariable Integer courseId){
 
-    @DeleteMapping("/students/{studentId}/courses/{courseId}")
-    public ResponseEntity<Void> unenrollStudent(
-            @PathVariable Integer studentId,
-            @PathVariable Integer courseId) {
-
-        enrollmentService.unenrollStudent(studentId, courseId);
-
+        enrollmentService.unenrollMyCourse(courseId);
         return ResponseEntity.noContent().build();
     }
+    @GetMapping("/my-courses")
+    public ResponseEntity<List<StudentCourseDTO>> getMyCourses(){
+
+        return ResponseEntity.ok(
+                enrollmentService.getMyCourses()
+        );
+
+
+    }
+
 }
