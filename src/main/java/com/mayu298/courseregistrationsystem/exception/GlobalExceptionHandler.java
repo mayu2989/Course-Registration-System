@@ -5,11 +5,26 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
 
+import java.nio.file.AccessDeniedException;
 import java.time.LocalDateTime;
 import java.util.Map;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
+    @ExceptionHandler(org.springframework.security.access.AccessDeniedException.class)
+    public ResponseEntity<?> handleAccessDenied(
+            org.springframework.security.access.AccessDeniedException ex) {
+
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(
+                Map.of(
+                        "timestamp", LocalDateTime.now(),
+                        "status", 403,
+                        "error", "Forbidden",
+                        "message", "You are not authorized to perform this action"
+                )
+        );
+    }
+
     @ExceptionHandler(UsernameAlreadyExistsException.class)
     public ResponseEntity<?> handleUsernameExists(UsernameAlreadyExistsException ex) {
 

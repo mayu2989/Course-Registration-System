@@ -13,6 +13,7 @@ import com.mayu298.courseregistrationsystem.security.CustomUserDetails;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -43,7 +44,7 @@ public class EnrollmentService {
     // ============================
     // ENROLL LOGGED-IN STUDENT
     // ============================
-
+    @PreAuthorize("hasRole('STUDENT')")
     @Transactional
     public EnrollmentResponseDTO enrollStudent(EnrollmentRequestDTO dto) {
 
@@ -84,7 +85,7 @@ public class EnrollmentService {
     // ============================
     // GET MY COURSES
     // ============================
-
+    @PreAuthorize("hasRole('STUDENT')")
     public List<StudentCourseDTO> getMyCourses() {
 
         CustomUserDetails principal =
@@ -123,7 +124,7 @@ public class EnrollmentService {
     // ============================
     // ADMIN ONLY
     // ============================
-
+    @PreAuthorize("hasRole('ADMIN')")
     public List<StudentResponseDTO> getStudentsForCourse(Integer courseId) {
 
         Course course = courseRepository.findById(courseId)
@@ -151,7 +152,7 @@ public class EnrollmentService {
     // ============================
     // UNENROLL MYSELF
     // ============================
-
+    @PreAuthorize("hasRole('STUDENT')")
     @Transactional
     public void unenrollMyCourse(Integer courseId) {
 

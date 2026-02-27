@@ -7,6 +7,7 @@ import com.mayu298.courseregistrationsystem.model.Course;
 import com.mayu298.courseregistrationsystem.repository.CourseRepository;
 import com.mayu298.courseregistrationsystem.repository.EnrollmentRepository;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -21,7 +22,7 @@ public class CourseService {
         this.courseRepository = courseRepository;
         this.enrollmentRepository = enrollmentRepository;
     }
-
+    @PreAuthorize("hasRole('ADMIN')")
     public CourseResponseDTO createCourse(CourseRequestDTO dto) {
 
         Course course = new Course();
@@ -29,6 +30,11 @@ public class CourseService {
         course.setDescription(dto.getDescription());
 
         Course savedCourse = courseRepository.save(course);
+        System.out.println(
+                SecurityContextHolder.getContext()
+                        .getAuthentication()
+                        .getAuthorities()
+        );
 
         return mapToDTO(savedCourse);
     }
@@ -40,7 +46,7 @@ public class CourseService {
                 .map(this::mapToDTO)
                 .collect(Collectors.toList());
     }
-
+    @PreAuthorize("hasRole('ADMIN')")
     public CourseResponseDTO getCourseById(Integer id) {
 
         Course course = courseRepository.findById(id)
