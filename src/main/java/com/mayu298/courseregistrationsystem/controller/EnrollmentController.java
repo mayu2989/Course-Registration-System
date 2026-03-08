@@ -10,7 +10,6 @@ import java.util.List;
 @RestController
 @RequestMapping("/enrollments")
 public class EnrollmentController {
-
     private final EnrollmentService enrollmentService;
 
     public EnrollmentController(EnrollmentService enrollmentService) {

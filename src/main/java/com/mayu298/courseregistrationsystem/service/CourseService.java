@@ -48,7 +48,6 @@ public class CourseService {
     }
     @PreAuthorize("hasRole('ADMIN')")
     public CourseResponseDTO getCourseById(Integer id) {
-
         Course course = courseRepository.findById(id)
                 .orElseThrow(() ->
                         new RuntimeException("Course not found with id: " + id));
@@ -62,6 +61,7 @@ public class CourseService {
                     "Cannot delete course with enrolled students"
             );
         }
+        courseRepository.deleteById(id);
     }
 
     private CourseResponseDTO mapToDTO(Course course) {

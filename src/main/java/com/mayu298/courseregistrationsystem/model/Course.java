@@ -20,7 +20,6 @@ import org.hibernate.annotations.ParamDef;
 
 @FilterDef(name = "deletedCourseFilter",
         parameters = @ParamDef(name = "isDeleted", type = Boolean.class))
-
 @Filter(name = "deletedCourseFilter",
         condition = "deleted = :isDeleted")
 public class Course extends Auditable {
@@ -33,5 +32,6 @@ public class Course extends Auditable {
     @Column(length = 1000)
     @NotBlank(message = "Description is required")
     String description;
-
+    @Column
+    boolean isDeleted;
 }
