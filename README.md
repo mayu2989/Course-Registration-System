@@ -1,3 +1,4 @@
+[![Render](https://img.shields.io/badge/Deployed%20on-Render-46E3B7)](https://course-registration-system-2-877a.onrender.com)
 # Course Registration System (Backend)
 
 A backend REST API for a **Course Registration System** built with **Spring Boot**.
