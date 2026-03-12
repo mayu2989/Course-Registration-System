@@ -1,61 +1,52 @@
 # Course Registration System (Backend)
 
-This project is a **Spring Boot backend application** for a Course Registration System.
-It provides REST APIs for managing users, courses, and student enrollments.
-
-The system supports **secure authentication using JWT** and **role-based access control** for administrators and students.
+A backend REST API for a **Course Registration System** built with **Spring Boot**.
+It provides secure APIs for managing users, courses, and student enrollments.
 
 ---
 
-## Features
+# Live Deployment
 
-* User registration and login
-* JWT-based authentication
-* Role-based authorization (Admin / Student)
-* Course management
-* Student course enrollment
-* RESTful API design
-* Global exception handling
-* Input validation
-* PostgreSQL database integration
-* Docker support for containerized deployment
+The backend is deployed on Render and can be accessed at:
+
+https://course-registration-system-2-877a.onrender.com
+
+You can use this base URL to test the APIs.
 
 ---
 
-## Tech Stack
+# Features
+
+* User Registration
+* User Login with JWT Authentication
+* Role-Based Access Control (Admin / Student)
+* Course Management
+* Course Enrollment
+* Secure REST APIs
+* Global Exception Handling
+* Docker Support
+* Cloud Deployment (Render)
+
+---
+
+# Tech Stack
 
 * Java
 * Spring Boot
 * Spring Security
-* JWT (JSON Web Token)
-* JPA / Hibernate
+* JWT Authentication
 * PostgreSQL
+* JPA / Hibernate
 * Maven
 * Docker
 
 ---
 
-## Project Structure
-
-```
-src/main/java
-├── controller
-├── service
-├── repository
-├── model
-├── dto
-├── security
-├── exception
-└── config
-```
-
----
-
-## Authentication
+# Authentication
 
 The system uses **JWT authentication**.
 
-After a successful login, the API returns a token that must be included in all protected requests.
+After login, the API returns a token that must be included in all protected requests.
 
 Example header:
 
@@ -65,11 +56,11 @@ Authorization: Bearer <JWT_TOKEN>
 
 ---
 
-## API Endpoints
+# API Endpoints
 
-### Authentication
+## Authentication
 
-**Register User**
+### Register User
 
 POST `/auth/register`
 
@@ -85,7 +76,7 @@ Request Body
 
 ---
 
-**Login**
+### Login
 
 POST `/auth/login`
 
@@ -108,15 +99,15 @@ Response
 
 ---
 
-### Courses
+## Courses
 
-**Get All Courses**
+### Get All Courses
 
 GET `/courses`
 
 ---
 
-**Create Course (Admin)**
+### Create Course (Admin)
 
 POST `/courses`
 
@@ -132,15 +123,15 @@ Request Body
 
 ---
 
-**Delete Course (Admin)**
+### Delete Course (Admin)
 
 DELETE `/courses/{id}`
 
 ---
 
-### Enrollment
+## Enrollment
 
-**Enroll in Course**
+### Enroll in Course
 
 POST `/enroll`
 
@@ -154,13 +145,13 @@ Request Body
 
 ---
 
-**View My Courses**
+### View My Courses
 
 GET `/students/me/courses`
 
 ---
 
-## Running the Project Locally
+# Running Locally
 
 Clone the repository
 
@@ -181,7 +172,7 @@ Run the application
 mvn spring-boot:run
 ```
 
-The application will start at:
+Server will run on
 
 ```
 http://localhost:8080
@@ -189,9 +180,9 @@ http://localhost:8080
 
 ---
 
-## Configuration
+# Configuration
 
-Application settings are configured in:
+Application configuration is stored in:
 
 ```
 src/main/resources/application.properties
@@ -201,19 +192,19 @@ This includes:
 
 * Database configuration
 * Security configuration
-* Environment-specific properties
+* Deployment configuration
 
 ---
 
-## Docker Support
+# Docker
 
-Build the Docker image:
+Build image
 
 ```
 docker build -t course-registration-system .
 ```
 
-Run the container:
+Run container
 
 ```
 docker run -p 8080:8080 course-registration-system
@@ -221,26 +212,16 @@ docker run -p 8080:8080 course-registration-system
 
 ---
 
-## Deployment
+# Future Improvements
 
-The backend can be deployed on cloud platforms such as:
-
-* Render
-* AWS
-* Docker containers
-
----
-
-## Future Improvements
-
-* React frontend for user interface
-* Course search and filtering
-* Pagination for course listings
-* Admin dashboard
-* Email notifications
+* React Frontend
+* Course Search
+* Pagination
+* Admin Dashboard
+* Email Notifications
 
 ---
 
-## License
+# License
 
-This project is intended for educational and learning purposes.
+This project is created for educational purposes.
