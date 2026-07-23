@@ -4,15 +4,6 @@
 A backend REST API for a **Course Registration System** built with **Spring Boot**.
 It provides secure APIs for managing users, courses, and student enrollments.
 
----
-
-# Live Deployment
-
-The backend is deployed on Render and can be accessed at:
-
-https://course-registration-system-2-877a.onrender.com
-
-You can use this base URL to test the APIs.
 
 ---
 
